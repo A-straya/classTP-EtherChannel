@@ -1,1 +1,61 @@
 
+enable
+configure terminal
+
+hostname S3
+
+no ip domain-lookup
+service password-encryption
+
+enable secret class
+
+banner motd # UNAUTHORIZED ACCESS PROHIBITED #
+
+line console 0
+ password cisco
+ login
+ logging synchronous
+ exit
+
+line vty 0 15
+ password cisco
+ login
+ exit
+
+vlan 99
+ name Management
+ exit
+
+vlan 10
+ name Staff
+ exit
+
+interface vlan 99
+ ip address 192.168.99.13 255.255.255.0
+ no shutdown
+ exit
+
+interface range fastethernet0/1-2
+ switchport mode trunk
+ switchport trunk native vlan 99
+ channel-group 3 mode passive
+ no shutdown
+ exit
+
+interface port-channel 3
+ switchport mode trunk
+ switchport trunk native vlan 99
+ exit
+
+interface range fastethernet0/3-4
+ channel-group 1 mode auto
+ no shutdown
+ exit
+
+interface port-channel 1
+ switchport mode trunk
+ switchport trunk native vlan 99
+ exit
+
+end
+copy running-config startup-config
